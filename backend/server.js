@@ -44,20 +44,20 @@ const checkFileType = function (file, cb) {
   }
 };
 
-// Route to handle HTTP POST requests for single image uploads
-app.post("/uploadsingleimage", upload.single("image"), async (req, res) => {
-  console.log("Received image", req.body);
+// Route to handle HTTP POST requests for multiple image uploads
+app.post("/uploadmultipleimages", upload.array("images", 10), async (req, res) => {
+  console.log("Received images", req.files);
 
-  // Check if an image file was successfully uploaded
-  if (req.file) {
+  // Check if any image files were successfully uploaded
+  if (req.files && req.files.length > 0) {
     return res.status(201).json({
-      message: "Thank you for uploading image",
+      message: `Thank you for uploading ${req.files.length} image(s)`,
     });
   }
 
-  // If no valid image file was uploaded, respond with a 400 Bad Request status and an error message
+  // If no valid image files were uploaded, respond with a 400 Bad Request status and an error message
   res.status(400).json({
-    message: "Please upload a valid image",
+    message: "Please upload at least one valid image",
   });
 });
 

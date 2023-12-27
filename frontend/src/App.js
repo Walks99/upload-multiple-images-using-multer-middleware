@@ -12,25 +12,29 @@ function App() {
     e.preventDefault(); // Prevent the default form submission behavior
     console.log('Submit button clicked');
 
-    // Get the selected image file from the input element with id "image"
-    const imageFile = document.getElementById("image").files[0];
-    console.log(imageFile);
+    // Get the selected image files from the input element with id "image"
+    const imageFiles = document.getElementById("image").files;
+    console.log(imageFiles);
 
-    // Check if an image file is selected
-    if (imageFile) {
-      // Create a FormData object to store the image file for sending in the request
+    // Check if any image files are selected
+    if (imageFiles.length > 0) {
+      // Create a FormData object to store the image files for sending in the request
       const formData = new FormData();
-      formData.append('image', imageFile);
+
+      // Append each selected image file to the FormData
+      for (let i = 0; i < imageFiles.length; i++) {
+        formData.append(`images`, imageFiles[i]);
+      }
 
       console.log(formData);
 
       try {
         // Use the Fetch API to make an HTTP POST request to the server endpoint
         const response = await fetch(
-          "http://localhost:4000/uploadsingleimage",
+          "http://localhost:4000/uploadmultipleimages",
           {
             method: "POST",
-            body: formData, // Attach the FormData containing the image file
+            body: formData, // Attach the FormData containing the image files
           }
         );
 
@@ -39,7 +43,7 @@ function App() {
           // Parse the JSON response from the server
           const data = await response.json();
           // Update the success message state with the message from the server
-          setSuccessMessage(data.message); 
+          setSuccessMessage(data.message);
         } else if (response.status === 400) {
           // If there's a 400 Bad Request status, parse the JSON response
           const data = await response.json();
@@ -59,13 +63,13 @@ function App() {
   // Render the component JSX
   return (
     <div>
-      <h1>Upload an Image</h1>
+      <h1>Upload Images</h1>
       {/* Form to handle the image upload, with an onSubmit event triggering the uploadImageViaHttpPostRequest function */}
       <form onSubmit={uploadImageViaHttpPostRequest}>
         {/* Label for the file input */}
-        <label htmlFor="image">Choose an image: </label>
-        {/* Input element allowing the selection of image files, restricted to image types */}
-        <input type="file" id="image" name="image" accept="image/*" />
+        <label htmlFor="image">Choose images: </label>
+        {/* Input element allowing the selection of multiple files */}
+        <input type="file" id="image" name="image" multiple />
         {/* Button to submit the form and trigger the image upload */}
         <button type="submit">Upload</button>
       </form>
